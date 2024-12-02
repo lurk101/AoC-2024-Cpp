@@ -14,8 +14,8 @@ static bool safe(vector<int>& levels) {
         int dif = levels[i - 1] - levels[i];
         if ((dif == 0) || (abs(dif) > 3)) return false;
         if (ascending) {
-            if (levels[i - 1] > levels[i]) return false;
-        } else if (levels[i - 1] < levels[i])
+            if (dif > 0) return false;
+        } else if (dif < 0)
             return false;
     }
     return true;
@@ -50,6 +50,6 @@ int main() {
          << "part 1   - " << part1 << endl
          << "part 2   - " << part2 << endl
          << "run time - "
-         << duration_cast<microseconds>(high_resolution_clock::now() - start).count() / 1000.0
+         << duration_cast<microseconds>(high_resolution_clock::now() - start).count() / 1E3
          << " ms." << endl;
 }
