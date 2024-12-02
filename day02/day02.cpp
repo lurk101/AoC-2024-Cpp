@@ -40,15 +40,14 @@ int main() {
         vector<int> levels;
         int level;
         while (ssline >> level) levels.push_back(level);
-        if (safe(levels)) {
+        if (safe(levels))
             part1++;
-            part2++;
-        } else if (safe2(levels))
+        else if (safe2(levels))
             part2++;
     }
     cout << "Day 2: Red-Nosed Reports" << endl
          << "part 1   - " << part1 << endl
-         << "part 2   - " << part2 << endl
+         << "part 2   - " << part1 + part2 << endl
          << "run time - "
          << duration_cast<microseconds>(high_resolution_clock::now() - start).count() / 1E3
          << " ms." << endl;
