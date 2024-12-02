@@ -39,7 +39,7 @@ int main() {
     cout << "Day 1: Historian Hysteria" << endl
          << "part 1   - " << p1(left, right) << endl
          << "part 2   - " << s2 << endl
-         << "run rime - "
+         << "run time - "
          << duration_cast<microseconds>(high_resolution_clock::now() - start).count() / 1000.0
          << " ms." << endl;
 }
