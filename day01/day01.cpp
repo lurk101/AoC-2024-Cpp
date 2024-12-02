@@ -10,7 +10,7 @@
 using namespace std;
 using namespace chrono;
 
-static int p1(vector<int> left, vector<int> right) {
+static int p1(vector<int>& left, vector<int>& right) {
     sort(left.begin(), left.end());
     sort(right.begin(), right.end());
     int space = 0;
@@ -35,9 +35,10 @@ int main() {
         left.push_back(l);
         right.push_back(r);
     }
+    int s2(p2(left, right));
     cout << "Day 1: Historian Hysteria" << endl
          << "part 1   - " << p1(left, right) << endl
-         << "part 2   - " << p2(left, right) << endl
+         << "part 2   - " << s2 << endl
          << "run rime - "
          << duration_cast<microseconds>(high_resolution_clock::now() - start).count() / 1000.0
          << " ms." << endl;
