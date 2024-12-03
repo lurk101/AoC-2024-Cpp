@@ -30,7 +30,7 @@ static int part2() {
     regex on(R"(do\(\))");
     regex off(R"(don't\(\))");
     regex combo(R"(mul\((\d+),(\d+)\)|do\(\)|don't\(\))");
-    for (auto str : lines) {
+    for (auto str : lines)
         while (regex_search(str, match, combo)) {
             if (!mulOn && regex_match(match.str(), on)) {
                 mulOn = true;
@@ -42,7 +42,6 @@ static int part2() {
                 count += stoi(match[1].str()) * stoi(match[2].str());
             str = match.suffix().str();
         }
-    }
     return count;
 }
 
