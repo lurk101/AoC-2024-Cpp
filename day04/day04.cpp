@@ -10,12 +10,11 @@ using namespace chrono;
 
 static vector<vector<char>> m;
 
-static int H(int i, int j, const char w[]) {
-    if (j <= m.size() - 4) return strncmp(&m[i][j], w, 4) == 0;
-    return 0;
+static int H(int i, int j, const char* w) {
+    return (j <= m.size() - 4) ? (memcmp(&m[i][j], w, 4) == 0 ? 1 : 0) : 0;
 }
 
-static int V(int i, int j, const char w[]) {
+static int V(int i, int j, const char* w) {
     if (i <= m.size() - 4) {
         int count = 1;
         for (int k = 0; k < 4; k++)
@@ -25,7 +24,7 @@ static int V(int i, int j, const char w[]) {
     return 0;
 }
 
-static int DiagL(int i, int j, const char w[]) {
+static int diagL(int i, int j, const char* w) {
     if (i <= m.size() - 4 && j <= m.size() - 4) {
         int count(1);
         for (int k = 0; k < 4; k++)
@@ -35,7 +34,7 @@ static int DiagL(int i, int j, const char w[]) {
     return 0;
 }
 
-static int DiagR(int i, int j, const char w[]) {
+static int diagR(int i, int j, const char* w) {
     if (i <= m.size() - 4 && j >= 4 - 1) {
         int count(1);
         for (int k = 0; k < 4; k++)
@@ -50,8 +49,8 @@ static int part1() {
     for (int i = 0; i < m.size(); i++)
         for (int j = 0; j < m.size(); j++)
             count += H(i, j, "XMAS") + H(i, j, "SAMX") + V(i, j, "XMAS") + V(i, j, "SAMX") +
-                     DiagL(i, j, "XMAS") + DiagL(i, j, "SAMX") + DiagR(i, j, "XMAS") +
-                     DiagR(i, j, "SAMX");
+                     diagL(i, j, "XMAS") + diagL(i, j, "SAMX") + diagR(i, j, "XMAS") +
+                     diagR(i, j, "SAMX");
     return count;
 }
 
