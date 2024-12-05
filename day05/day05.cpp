@@ -10,17 +10,17 @@
 using namespace std;
 using namespace chrono;
 
-static unordered_map<int, unordered_set<int>> numbers;
+static unordered_map<int, unordered_set<int>> pages;
 static int part1, part2;
 
-static bool LT(int lhs, int rhs) { return numbers[lhs].find(rhs) != numbers[lhs].end(); }
+static bool LT(int lhs, int rhs) { return pages[lhs].find(rhs) != pages[lhs].end(); }
 
 int main() {
     auto start = high_resolution_clock::now();
     ifstream fi("day05.txt");
     string line;
     while (getline(fi, line) && (line != ""))
-        numbers[stoi(line.substr(0, 2))].insert(stoi(line.substr(3, 2)));
+        pages[stoi(line.substr(0, 2))].insert(stoi(line.substr(3, 2)));
     while (getline(fi, line)) {
         vector<int> ordered;
         for (int i = 0; i < line.length(); i += 3) ordered.push_back(stoi(line.substr(i, 2)));
@@ -35,6 +35,6 @@ int main() {
          << "part 1   - " << part1 << endl
          << "part 2   - " << part2 << endl
          << "run time - "
-         << duration_cast<microseconds>(high_resolution_clock::now() - start).count() / 1000.0
+         << duration_cast<microseconds>(high_resolution_clock::now() - start).count() / 1e3
          << " ms." << endl;
 }
