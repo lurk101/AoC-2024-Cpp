@@ -10,22 +10,20 @@
 using namespace std;
 using namespace chrono;
 
-static unordered_map<int, unordered_set<int>> pages;
-static int part1, part2;
-
-static bool LT(int lhs, int rhs) { return pages[lhs].find(rhs) != pages[lhs].end(); }
-
 int main() {
     auto start = high_resolution_clock::now();
     ifstream fi("day05.txt");
     string line;
+    unordered_map<int, unordered_set<int8_t>> p;
     while (getline(fi, line) && (line != ""))
-        pages[stoi(line.substr(0, 2))].insert(stoi(line.substr(3, 2)));
+        p[stoi(line.substr(0, 2))].insert(stoi(line.substr(3, 2)));
+    int part1(0), part2(0);
     while (getline(fi, line)) {
         vector<int> ordered;
         for (int i = 0; i < line.length(); i += 3) ordered.push_back(stoi(line.substr(i, 2)));
-        auto unOrdered = ordered;
-        sort(ordered.begin(), ordered.end(), LT);
+        auto unOrdered(ordered);
+        sort(ordered.begin(), ordered.end(),
+             [&p](int l, int r) { return p[l].find(r) != p[l].end(); });
         if (unOrdered == ordered)
             part1 += ordered[ordered.size() / 2];
         else
