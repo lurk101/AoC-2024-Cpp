@@ -14,16 +14,16 @@ int main() {
     auto start = high_resolution_clock::now();
     ifstream fi("day05.txt");
     string line;
-    unordered_map<int, unordered_set<int8_t>> p;
+    unordered_map<int8_t, unordered_set<int8_t>> p;
     while (getline(fi, line) && (line != ""))
         p[stoi(line.substr(0, 2))].insert(stoi(line.substr(3, 2)));
     int part1(0), part2(0);
     while (getline(fi, line)) {
-        vector<int> ordered;
+        vector<int8_t> ordered;
         for (int i = 0; i < line.length(); i += 3) ordered.push_back(stoi(line.substr(i, 2)));
         auto unOrdered(ordered);
         sort(ordered.begin(), ordered.end(),
-             [&p](int l, int r) { return p[l].find(r) != p[l].end(); });
+             [&p](int8_t l, int8_t r) { return p[l].find(r) != p[l].end(); });
         if (unOrdered == ordered)
             part1 += ordered[ordered.size() / 2];
         else
