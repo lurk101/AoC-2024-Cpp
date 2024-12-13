@@ -77,7 +77,7 @@ public:
                         sizes[spot[{y, x}]].second++;
                 }
             }
-        for (auto& [k, v] : sizes) s += v.first * v.second;
+        for (const auto& [_, v] : sizes) s += v.first * v.second;
         return s;
     }
 
@@ -95,7 +95,7 @@ public:
                 sizes[spot[{y, x}]].first++;
                 sizes[spot[{y, x}]].second += Corners(y, x, spot);
             }
-        for (auto& [k, v] : sizes) s += v.first * v.second;
+        for (const auto& [_, v] : sizes) s += v.first * v.second;
         return s;
     }
 };
