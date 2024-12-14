@@ -16,8 +16,6 @@ static bool isTree(vector<string>& grid, int robots) {
     map<pair<int, int>, bool> visited;
     int maxX = grid[0].size();
     int maxY = grid.size();
-    int maxCount = 0;
-
     for (int x = 0; x < maxX; x++)
         for (int y = 0; y < maxY; y++)
             if (grid[y][x] == '#' && !visited[{x, y}]) {
@@ -35,7 +33,6 @@ static bool isTree(vector<string>& grid, int robots) {
                             grid[x + dx][y + dy] == '#')
                             q.push({x + dx, y + dy});
                 }
-                maxCount = max(maxCount, count);
                 if (count > 200) return true;
             }
     return false;
