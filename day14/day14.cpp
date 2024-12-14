@@ -85,7 +85,11 @@ static int Part2(int maxX, int maxY) {
             auto [pos, vel] = robot;
             grid[pos.second][pos.first] = '#';
         }
-        if (isTree(grid, robots.size())) return i;
+        if (isTree(grid, robots.size())) {
+            // for (auto l : grid)
+            //     cout << l << endl;
+            return i;
+        }
     }
 }
 
