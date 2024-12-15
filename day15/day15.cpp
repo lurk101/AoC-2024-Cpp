@@ -11,6 +11,10 @@ using namespace chrono;
 struct Point {
     int y, x;
     Point operator+(const Point& p) const { return {y + p.y, x + p.x}; }
+    void operator+=(const Point& p) {
+        y += p.y;
+        x += p.x;
+    }
 };
 
 static vector<string> grid, saveGrid;
@@ -21,14 +25,14 @@ static map<char, char> oppDir = {{'^', 'v'}, {'v', '^'}, {'<', '>'}, {'>', '<'}}
 
 static void MovBot(char dir, Point& pos) {
     Point cur = pos + dirs[dir];
-    while (grid[cur.y][cur.x] == 'O') cur = cur + dirs[dir];
+    while (grid[cur.y][cur.x] == 'O') cur += dirs[dir];
     if (grid[cur.y][cur.x] == '#') return;
     while (cur.y != pos.y || cur.x != pos.x) {
         Point nexPos{cur + dirs[oppDir[dir]]};
         swap(grid[cur.y][cur.x], grid[nexPos.y][nexPos.x]);
         cur = nexPos;
     }
-    pos = pos + dirs[dir];
+    pos += dirs[dir];
 }
 
 static bool ChkBox(char dir, Point pos) {
@@ -72,7 +76,6 @@ static uint64_t Part1() {
 
 static uint64_t Part2() {
     grid.clear();
-    uint64_t s = 0;
     for (auto line : saveGrid) {
         string row = "";
         for (auto c : line) {
@@ -99,6 +102,7 @@ Found:
             MovBox(instr, pos);
             pos = pos + dirs[instr];
         }
+    uint64_t s = 0;
     for (int i = 0; i < grid.size(); i++)
         for (int j = 0; j < grid[0].size(); j++)
             if (grid[i][j] == '[') s += i * 100 + j;
