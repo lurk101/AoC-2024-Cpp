@@ -12,7 +12,7 @@ using namespace chrono;
 
 static vector<pair<pair<int, int>, pair<int, int>>> robots;
 
-static bool isTree(vector<string>& grid, int robots) {
+static bool hasTree(vector<string>& grid) {
     map<pair<int, int>, bool> visited;
     int maxX = grid[0].size();
     int maxY = grid.size();
@@ -33,7 +33,7 @@ static bool isTree(vector<string>& grid, int robots) {
                             grid[x + dx][y + dy] == '#')
                             q.push({x + dx, y + dy});
                 }
-                if (count > 200) return true;
+                if (count > 32) return true;
             }
     return false;
 }
@@ -82,7 +82,7 @@ static int Part2(int maxX, int maxY) {
             auto [pos, vel] = robot;
             grid[pos.second][pos.first] = '#';
         }
-        if (isTree(grid, robots.size())) {
+        if (hasTree(grid)) {
             // for (auto l : grid)
             //     cout << l << endl;
             return i;
