@@ -1,67 +1,61 @@
 #include <chrono>
 #include <fstream>
 #include <iostream>
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 using namespace std;
 using namespace chrono;
 
-unordered_map<string, uint64_t> stones;
+static unordered_map<string, uint64_t> pebbles;
 
-static vector<string> split(string s, string delimiter) {
-    size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+static vector<string> Split(string s, string delimiter) {
+    size_t pos = 0, posEnd, delimLen = delimiter.length();
     string token;
     vector<string> r;
-    while ((pos_end = s.find(delimiter, pos_start)) != string::npos) {
-        token = s.substr(pos_start, pos_end - pos_start);
-        pos_start = pos_end + delim_len;
+    while ((posEnd = s.find(delimiter, pos)) != string::npos) {
+        token = s.substr(pos, posEnd - pos);
+        pos = posEnd + delimLen;
         r.push_back(token);
     }
-    r.push_back(s.substr(pos_start));
+    r.push_back(s.substr(pos));
     return r;
 }
 
-static void Insert(unordered_map<string, uint64_t>& stones, string& key, uint64_t count) {
-    if (stones.find(key) != stones.end())
-        stones[key] += count;
-    else
-        stones[key] = count;
+static inline void Insert(string& key, uint64_t count) {
+    pebbles[key] += count;
 }
 
 static void NextGen() {
-    unordered_map<string, uint64_t> next;
-    for (auto x : stones) {
-        auto& [name, count] = x;
-        if (name == "0") {
+    unordered_map<string, uint64_t> prev;
+    prev.swap(pebbles);
+    for (auto& pebble : prev) {
+        auto& [id, count] = pebble;
+        if (id == "0") {
             string s1("1");
-            Insert(next, s1, count);
+            Insert(s1, count);
             continue;
         }
-        int sz = int(name.size());
+        int sz = int(id.size());
         if ((sz & 1) == 0) {
-            auto s1 = name.substr(0, sz / 2);
-            auto s2 = name.substr(sz / 2, sz / 2);
-            s1 = to_string(stoll(s1, NULL, 10));
-            Insert(next, s1, count);
-            s2 = to_string(stoll(s2, NULL, 10));
-            Insert(next, s2, count);
+            auto s1 = id.substr(0, sz / 2);
+            s1 = to_string(stoll(s1));
+            auto s2 = id.substr(sz / 2, sz / 2);
+            s2 = to_string(stoll(s2));
+            Insert(s1, count);
+            Insert(s2, count);
             continue;
         }
-        auto s1 = to_string(2024 * stoll(name));
-        Insert(next, s1, count);
+        auto s1 = to_string(2024 * stoll(id));
+        Insert(s1, count);
     }
-    stones.swap(next);
 }
 
-static uint64_t part(int start, int blinks) {
+static uint64_t Part(int start, int blinks) {
     for (int i = start; i < blinks; i++) NextGen();
-    uint64_t s = 0ULL;
-    for (auto x : stones) {
-        auto& [_, v] = x;
-        s += v;
-    }
+    uint64_t s = 0;
+    for (auto pebble : pebbles) s += pebble.second;
     return s;
 }
 
@@ -70,13 +64,13 @@ int main() {
     ifstream fi("day11.txt");
     string line;
     while (getline(fi, line)) {
-        vector<string> nums = split(line, " ");
-        for (auto x : nums) Insert(stones, x, 1);
+        vector<string> nums = Split(line, " ");
+        for (auto n : nums) Insert(n, 1);
     }
     cout << "Day 11: Plutonian Pebbles" << endl
-        << "part 1   - " << part(0, 25) << endl
-        << "part 2   - " << part(25, 75) << endl
-        << "run time - "
-        << duration_cast<microseconds>(high_resolution_clock::now() - start).count() / 1e3
-        << " ms." << endl;
+         << "Part 1   - " << Part(0, 25) << endl
+         << "Part 2   - " << Part(25, 75) << endl
+         << "Run time - "
+         << duration_cast<microseconds>(high_resolution_clock::now() - start).count() / 1e3
+         << " ms." << endl;
 }
