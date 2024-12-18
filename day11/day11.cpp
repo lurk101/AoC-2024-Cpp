@@ -23,9 +23,7 @@ static vector<string> Split(string s, string delimiter) {
     return r;
 }
 
-static inline void Insert(string& key, uint64_t count) {
-    pebbles[key] += count;
-}
+static inline void Insert(string key, uint64_t count) { pebbles[key] += count; }
 
 static void NextGen() {
     unordered_map<string, uint64_t> prev;
@@ -33,22 +31,20 @@ static void NextGen() {
     for (auto& pebble : prev) {
         auto& [id, count] = pebble;
         if (id == "0") {
-            string s1("1");
-            Insert(s1, count);
+            Insert("1", count);
             continue;
         }
         int sz = int(id.size());
         if ((sz & 1) == 0) {
-            auto s1 = id.substr(0, sz / 2);
-            s1 = to_string(stoll(s1));
-            auto s2 = id.substr(sz / 2, sz / 2);
-            s2 = to_string(stoll(s2));
-            Insert(s1, count);
-            Insert(s2, count);
+            auto s = id.substr(0, sz / 2);
+            s = to_string(stoll(s));
+            Insert(s, count);
+            s = id.substr(sz / 2, sz / 2);
+            s = to_string(stoll(s));
+            Insert(s, count);
             continue;
         }
-        auto s1 = to_string(2024 * stoll(id));
-        Insert(s1, count);
+        Insert(to_string(2024 * stoll(id)), count);
     }
 }
 
