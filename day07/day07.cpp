@@ -7,19 +7,18 @@
 using namespace std;
 using namespace chrono;
 
-static auto getNumbers(string_view const line, char delim) {
-    vector<size_t> parts;
-    size_t strt{};
-    auto const len = line.size();
-    while (strt < len) {
-        size_t end = line.find(delim, strt);
-        if (end == string_view::npos) end = len;
-        size_t num{};
-        from_chars(line.data() + strt, line.data() + end, num);
-        parts.push_back(num);
-        strt = end + 1;
+static vector<size_t> getNumbers(const string_view& s, char delim) {
+    size_t pos = 0, posEnd;
+    string token;
+    vector<size_t> r;
+    while ((posEnd = s.find(delim, pos)) != string_view::npos) {
+        token = s.substr(pos, posEnd - pos);
+        pos = posEnd + 1;
+        r.push_back(stoll(token));
     }
-    return parts;
+    token = s.substr(pos);
+    r.push_back(stoll(token));
+    return r;
 }
 
 static constexpr bool divMod(size_t dividend, size_t divisor, size_t& quotient, size_t& remainder) {
@@ -58,8 +57,7 @@ static pair<size_t, size_t> solve(vector<string_view> const& in) {
         auto const eq_view{line.substr(colon + 2)};
         auto const eq{getNumbers(eq_view, ' ')};
         auto const eq_len{eq.size()};
-        size_t val = 0;
-        from_chars(line.data(), line.data() + colon, val);
+        size_t val = stoll(string(line));
         if (valid(eq_len - 1, val, eq, false)) part1 += val;
         if (valid(eq_len - 1, val, eq, true)) part2 += val;
     }
