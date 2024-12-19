@@ -10,9 +10,9 @@
 using namespace std;
 using namespace chrono;
 
-static vector<pair<pair<int, int>, pair<int, int>>> robots;
+static vector<pair<pair<int, int>, pair<int, int>>> bots;
 
-static bool hasTree(vector<string>& grid) {
+static bool hasEgg(const vector<string>& grid) {
     map<pair<int, int>, bool> visited;
     int maxX = grid[0].size();
     int maxY = grid.size();
@@ -39,10 +39,10 @@ static bool hasTree(vector<string>& grid) {
 }
 
 static uint64_t Part1(int maxX, int maxY, int time) {
-    vector<pair<pair<int, int>, pair<int, int>>> r = robots;
+    vector<pair<pair<int, int>, pair<int, int>>> r = bots;
     for (int i = 0; i < time; i++)
-        for (auto& robot : r) {
-            auto& [pos, vel] = robot;
+        for (auto& bot : r) {
+            auto& [pos, vel] = bot;
             pos.first += vel.first;
             pos.second += vel.second;
             pos.first += maxX;
@@ -51,8 +51,8 @@ static uint64_t Part1(int maxX, int maxY, int time) {
             pos.second %= maxY;
         }
     int q1 = 0, q2 = 0, q3 = 0, q4 = 0;
-    for (auto robot : r) {
-        auto [pos, vel] = robot;
+    for (auto bot : r) {
+        auto [pos, vel] = bot;
         if (pos.first < maxX / 2 && pos.second < maxY / 2)
             q1++;
         else if (pos.first > maxX / 2 && pos.second < maxY / 2)
@@ -66,10 +66,10 @@ static uint64_t Part1(int maxX, int maxY, int time) {
 }
 
 static int Part2(int maxX, int maxY) {
-    vector<pair<pair<int, int>, pair<int, int>>> r = robots;
+    vector<pair<pair<int, int>, pair<int, int>>> r = bots;
     for (int i = 1;; i++) {
-        for (auto& robot : r) {
-            auto& [pos, vel] = robot;
+        for (auto& bot : r) {
+            auto& [pos, vel] = bot;
             pos.first += vel.first;
             pos.second += vel.second;
             pos.first += maxX;
@@ -78,11 +78,11 @@ static int Part2(int maxX, int maxY) {
             pos.second %= maxY;
         }
         vector<string> grid(maxY, string(maxX, '.'));
-        for (auto robot : r) {
-            auto [pos, vel] = robot;
+        for (auto bot : r) {
+            auto [pos, vel] = bot;
             grid[pos.second][pos.first] = '#';
         }
-        if (hasTree(grid)) {
+        if (hasEgg(grid)) {
             // for (auto l : grid)
             //     cout << l << endl;
             return i;
@@ -97,7 +97,7 @@ int main() {
     while (getline(fi, line)) {
         int x1, y1, x2, y2;
         sscanf(line.c_str(), "p=%d,%d v=%d,%d", &x1, &y1, &x2, &y2);
-        robots.push_back({{x1, y1}, {x2, y2}});
+        bots.push_back({{x1, y1}, {x2, y2}});
     }
     cout << "Day 14: Restroom Redoubt" << endl
          << "Part 1   - " << Part1(101, 103, 100) << endl
