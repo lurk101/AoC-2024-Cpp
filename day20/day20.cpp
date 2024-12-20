@@ -10,12 +10,13 @@ using namespace std;
 using namespace chrono;
 
 static vector<string> grid;
+static int higth, width;
 static pair<int, int> start, finish;
 static const vector<pair<int, int>> dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 
 static auto Search(vector<string>& grid, pair<int, int>& start, pair<int, int>& finish) {
-    vector<vector<bool>> visited(grid.size(), vector<bool>(grid[0].size(), false));
-    vector<vector<int>> dist(grid.size(), vector<int>(grid[0].size(), -1));
+    vector<vector<int>> dist(higth, vector<int>(width, -1));
+    vector<vector<bool>> visited(higth, vector<bool>(width, false));
     queue<pair<pair<int, int>, int>> q;
     q.push({start, 0});
     visited[start.first][start.second] = true;
@@ -25,10 +26,8 @@ static auto Search(vector<string>& grid, pair<int, int>& start, pair<int, int>& 
         q.pop();
         if (cur == finish) break;
         for (auto dir : dirs) {
-            int y = cur.first + dir.first;
-            int x = cur.second + dir.second;
-            if (x < 0 || x >= grid[0].size() || y < 0 || y >= grid.size() || visited[y][x] ||
-                grid[y][x] == '#')
+            int y = cur.first + dir.first, x = cur.second + dir.second;
+            if (x < 0 || x >= width || y < 0 || y >= higth || visited[y][x] || grid[y][x] == '#')
                 continue;
             visited[y][x] = true;
             dist[y][x] = d + 1;
@@ -38,31 +37,29 @@ static auto Search(vector<string>& grid, pair<int, int>& start, pair<int, int>& 
     return dist;
 }
 
-static int Manhattan(pair<int, int> a, pair<int, int> b) {
+static inline int Manhattan(pair<int, int> a, pair<int, int> b) {
     return abs(a.first - b.first) + abs(a.second - b.second);
 }
 
-static int Part(int minStps) {
+static int Part(int steps) {
     int s = 0;
-    const int rows = int(grid.size());
-    const int cols = int(grid[0].size());
-    vector<vector<int>> fromStart = Search(grid, start, finish);
-    vector<vector<int>> fromFinish = Search(grid, finish, start);
-    int deflt = fromStart[finish.first][finish.second];
+    vector<vector<int>> toStart = Search(grid, start, finish),
+                        toFinish = Search(grid, finish, start);
+    int t = toStart[finish.first][finish.second];
     map<pair<pair<int, int>, pair<int, int>>, bool> checked;
-    for (int r = 0; r < rows; r++) {
-        for (int c = 0; c < cols; c++) {
-            if (grid[r][c] == '#') continue;
-            for (int newR = max(0, r - minStps); newR <= min(rows, r + minStps); newR++) {
-                if (newR < 0 || newR >= rows) continue;
-                for (int newC = max(0, c - minStps); newC <= min(cols, c + minStps); newC++) {
-                    if ((newC < 0 || newC >= cols) || (grid[newR][newC] == '#') ||
-                        (Manhattan({r, c}, {newR, newC}) > minStps) ||
-                        (fromStart[r][c] < 0 || fromFinish[newR][newC] < 0))
+    for (int y = 0; y < higth; y++) {
+        for (int x = 0; x < width; x++) {
+            if (grid[y][x] == '#') continue;
+            for (int newY = max(0, y - steps); newY <= min(higth, y + steps); newY++) {
+                if (newY < 0 || newY >= higth) continue;
+                for (int newX = max(0, x - steps); newX <= min(width, x + steps); newX++) {
+                    if ((newX < 0 || newX >= width) || (grid[newY][newX] == '#') ||
+                        (Manhattan({y, x}, {newY, newX}) > steps) ||
+                        (toStart[y][x] < 0 || toFinish[newY][newX] < 0))
                         continue;
                     int cheat =
-                        fromStart[r][c] + fromFinish[newR][newC] + Manhattan({r, c}, {newR, newC});
-                    if (deflt - cheat >= 100) s++;
+                        toStart[y][x] + toFinish[newY][newX] + Manhattan({y, x}, {newY, newX});
+                    if (t - cheat >= 100) s++;
                 }
             }
         }
@@ -74,16 +71,17 @@ int main() {
     auto strt = high_resolution_clock::now();
     ifstream fi("day20.txt");
     string line;
-    int r = 0;
+    higth = 0;
     while (getline(fi, line)) {
         grid.push_back(line);
-        for (int c = 0; c < line.size(); c++)
-            if (line[c] == 'S')
-                start = {r, c};
-            else if (line[c] == 'E')
-                finish = {r, c};
-        r++;
+        for (int x = 0; x < line.size(); x++)
+            if (line[x] == 'S')
+                start = {higth, x};
+            else if (line[x] == 'E')
+                finish = {higth, x};
+        higth++;
     }
+    width = int(grid[0].size());
     cout << "Day 20: Race Condition" << endl
          << "Part 1   - " << Part(2) << endl
          << "Part 2   - " << Part(20) << endl
