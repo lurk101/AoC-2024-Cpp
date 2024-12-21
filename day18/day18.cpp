@@ -8,41 +8,49 @@
 using namespace std;
 using namespace chrono;
 
-static vector<pair<int, int>> bytes;
+struct Point {
+    int x, y;
+    bool operator==(const Point& p) const { return (y == p.y) && (x == p.x); }
+    Point operator+(const Point& p) const { return {x + p.x, y + p.y}; }
+};
 
-static const pair<int, int> start = {0, 0};
-static const pair<int, int> finish = {70, 70};
-static const vector<pair<int, int>> dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+static vector<Point> bytes;
+static const Point start = {0, 0};
+static const Point finish = {70, 70};
+static const vector<Point> dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 
 static int Part1(int cycle) {
-    vector<vector<int>> grid(71, vector<int>(71, 0));
-    vector<vector<bool>> visited(71, vector<bool>(71, false));
-    vector<vector<int>> dist(71, vector<int>(71, 0));
-    for (int i = 0; i <= cycle; i++) grid[bytes[i].first][bytes[i].second] = 1;
-    queue<pair<pair<int, int>, int>> q;
+    int dx = finish.x - start.x + 1;
+    int dy = finish.y - start.y + 1;
+    vector<vector<bool>> grid(dx, vector<bool>(dy, false));
+    vector<vector<bool>> visited(dx, vector<bool>(dy, false));
+    vector<vector<int>> dist(dx, vector<int>(dy, 0));
+    for (int i = 0; i <= cycle; i++) grid[bytes[i].x][bytes[i].y] = true;
+    queue<pair<Point, int>> q;
     q.push({start, 0});
-    visited[start.first][start.second] = true;
-    while (!q.empty()) {
+    visited[start.x][start.y] = true;
+    while (q.size()) {
         auto [cur, d] = q.front();
         q.pop();
         if (cur == finish) return d;
         for (auto dir : dirs) {
-            int x = cur.first + dir.first;
-            int y = cur.second + dir.second;
-            if (x < 0 || x > 70 || y < 0 || y > 70 || visited[x][y] || grid[x][y]) continue;
+            auto [x, y] = cur + dir;
+            if (x < start.x || x > finish.x || y < start.y || y > finish.y || visited[x][y] ||
+                grid[x][y])
+                continue;
             visited[x][y] = true;
             dist[x][y] = d + 1;
             q.push({{x, y}, d + 1});
         }
     }
-    if (!visited[finish.first][finish.second]) return -1;
-    return dist[finish.first][finish.second];
+    if (!visited[finish.x][finish.y]) return -1;
+    return dist[finish.x][finish.y];
 }
 
 static string Part2() {
     int ans = 0;
     for (int i = 1024; i < bytes.size(); i++)
-        if (Part1(i) == -1) return to_string(bytes[i].first) + "," + to_string(bytes[i].second);
+        if (Part1(i) == -1) return to_string(bytes[i].x) + "," + to_string(bytes[i].y);
     return "not found";
 }
 
