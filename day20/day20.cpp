@@ -9,25 +9,31 @@
 using namespace std;
 using namespace chrono;
 
-static vector<string> grid;
-static int higth, width;
-static pair<int, int> start, finish;
-static const vector<pair<int, int>> dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+struct Point {
+    int y, x;
+    bool operator==(const Point& p) const { return (y == p.y) && (x == p.x); }
+    Point operator+(const Point& p) const { return {y + p.y, x + p.x}; }
+};
 
-static auto Search(vector<string>& grid, pair<int, int>& start, pair<int, int>& finish) {
-    vector<vector<int>> dist(higth, vector<int>(width, -1));
-    vector<vector<bool>> visited(higth, vector<bool>(width, false));
-    queue<pair<pair<int, int>, int>> q;
+static vector<string> grid;
+static int height, width;
+static Point start, finish;
+static const vector<Point> dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+
+static auto Search(vector<string>& grid, Point& start, Point& finish) {
+    vector<vector<int>> dist(height, vector<int>(width, -1));
+    vector<vector<bool>> visited(height, vector<bool>(width, false));
+    queue<pair<Point, int>> q;
     q.push({start, 0});
-    visited[start.first][start.second] = true;
-    dist[start.first][start.second] = 0;
+    visited[start.y][start.x] = true;
+    dist[start.y][start.x] = 0;
     while (!q.empty()) {
         auto [cur, d] = q.front();
         q.pop();
         if (cur == finish) break;
         for (auto dir : dirs) {
-            int y = cur.first + dir.first, x = cur.second + dir.second;
-            if (x < 0 || x >= width || y < 0 || y >= higth || visited[y][x] || grid[y][x] == '#')
+            auto [y, x] = cur + dir;
+            if (x < 0 || x >= width || y < 0 || y >= height || visited[y][x] || grid[y][x] == '#')
                 continue;
             visited[y][x] = true;
             dist[y][x] = d + 1;
@@ -37,21 +43,19 @@ static auto Search(vector<string>& grid, pair<int, int>& start, pair<int, int>& 
     return dist;
 }
 
-static inline int Manhattan(pair<int, int> a, pair<int, int> b) {
-    return abs(a.first - b.first) + abs(a.second - b.second);
-}
+static inline int Manhattan(Point a, Point b) { return abs(a.y - b.y) + abs(a.x - b.x); }
 
 static int Part(int steps) {
     int s = 0;
     vector<vector<int>> toStart = Search(grid, start, finish),
                         toFinish = Search(grid, finish, start);
-    int t = toStart[finish.first][finish.second];
-    map<pair<pair<int, int>, pair<int, int>>, bool> checked;
-    for (int y = 0; y < higth; y++) {
+    int t = toStart[finish.y][finish.x];
+    map<pair<Point, Point>, bool> checked;
+    for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             if (grid[y][x] == '#') continue;
-            for (int newY = max(0, y - steps); newY <= min(higth, y + steps); newY++) {
-                if (newY < 0 || newY >= higth) continue;
+            for (int newY = max(0, y - steps); newY <= min(height, y + steps); newY++) {
+                if (newY < 0 || newY >= height) continue;
                 for (int newX = max(0, x - steps); newX <= min(width, x + steps); newX++) {
                     if ((newX < 0 || newX >= width) || (grid[newY][newX] == '#') ||
                         (Manhattan({y, x}, {newY, newX}) > steps) ||
@@ -69,17 +73,17 @@ static int Part(int steps) {
 
 int main() {
     auto strt = high_resolution_clock::now();
-    ifstream fi("day20.txt");
     string line;
-    higth = 0;
+    height = 0;
+    ifstream fi("day20.txt");
     while (getline(fi, line)) {
         grid.push_back(line);
         for (int x = 0; x < line.size(); x++)
             if (line[x] == 'S')
-                start = {higth, x};
+                start = {height, x};
             else if (line[x] == 'E')
-                finish = {higth, x};
-        higth++;
+                finish = {height, x};
+        height++;
     }
     width = int(grid[0].size());
     cout << "Day 20: Race Condition" << endl
