@@ -24,32 +24,32 @@ static vector<string> Split(const string& s, const string delim) {
 
 static int Part1() {
     int s = 0;
-    for (string d : designs) {
-        int n = d.size();
-        vector<bool> dp(n + 1, false);
+    for (const string& d : designs) {
+        int n = d.size() + 1;
+        vector<bool> dp(n, false);
         dp[0] = true;
-        for (int i = 1; i <= n; i++)
+        for (int i = 1; i < n; i++)
             for (string p : patterns) {
                 int len = p.size();
                 if (i >= len && d.substr(i - len, len) == p) dp[i] = dp[i] || dp[i - len];
             }
-        if (dp[n]) s++;
+        if (dp[n - 1]) s++;
     }
     return s;
 }
 
 static uint64_t Part2() {
     uint64_t s = 0;
-    for (string d : designs) {
-        int n = d.size();
-        vector<uint64_t> dp(n + 1, 0);
+    for (const string& d : designs) {
+        int n = d.size() + 1;
+        vector<uint64_t> dp(n, 0);
         dp[0] = 1;
-        for (int i = 1; i <= n; i++)
+        for (int i = 1; i < n; i++)
             for (string p : patterns) {
                 int len = p.size();
                 if (i >= len && d.substr(i - len, len) == p) dp[i] += dp[i - len];
             }
-        s += dp[n];
+        s += dp[n - 1];
     }
     return s;
 }
