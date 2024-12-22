@@ -1,9 +1,9 @@
 #include <chrono>
-#include <deque>
 #include <fstream>
 #include <iostream>
 #include <map>
 #include <numeric>
+#include <queue>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -11,62 +11,60 @@
 using namespace std;
 using namespace chrono;
 
+typedef tuple<int8_t, int8_t, int8_t, int8_t, int8_t> key;
+
 static vector<string> codes;
-static map<tuple<int, int, int, int, int>, int64_t> memo;
+static map<key, int64_t> memo;
 
-static int64_t BestBot(const string& buttons, int nBots);
+static int64_t BestDirKey(const string& buttons, int nBots);
 
-static int64_t BestPad(int r, int c, int destR, int destC, int nBots) {
-    tuple<int, int, int, int, int> t({r, c, destR, destC, nBots});
-    auto it = memo.find(t);
+static int64_t BestMumKey(int r, int c, int dstR, int dstC, int nBots) {
+    key k({r, c, dstR, dstC, nBots});
+    auto it = memo.find(k);
     if (it != memo.end()) return it->second;
     int64_t low = numeric_limits<int64_t>::max();
     struct Visit {
         int r, c;
         string buttons;
     };
-    deque<Visit> q;
-    q.push_back({r, c, ""});
+    queue<Visit> q;
+    q.push({r, c, ""});
     while (!q.empty()) {
         auto v = q.front();
-        q.pop_front();
-        if (v.r == destR && v.c == destC) {
-            int64_t r = BestBot(v.buttons + "A", nBots - 1);
-            if (r < low) low = r;
+        q.pop();
+        if (v.r == dstR && v.c == dstC) {
+            low = min(low, BestDirKey(v.buttons + "A", nBots - 1));
             continue;
         }
         if (v.r == 0 && v.c == 0)
             continue;
-        else {
-            if (v.r < destR)
-                q.push_back({v.r + 1, v.c, v.buttons + "v"});
-            else if (v.r > destR)
-                q.push_back({v.r - 1, v.c, v.buttons + "^"});
-            if (v.c < destC)
-                q.push_back({v.r, v.c + 1, v.buttons + ">"});
-            else if (v.c > destC)
-                q.push_back({v.r, v.c - 1, v.buttons + "<"});
-        }
+        if (v.r < dstR)
+            q.push({v.r + 1, v.c, v.buttons + "v"});
+        else if (v.r > dstR)
+            q.push({v.r - 1, v.c, v.buttons + "^"});
+        if (v.c < dstC)
+            q.push({v.r, v.c + 1, v.buttons + ">"});
+        else if (v.c > dstC)
+            q.push({v.r, v.c - 1, v.buttons + "<"});
     }
-    memo[t] = low;
+    memo[k] = low;
     return low;
 }
 
-static int64_t BestBot(const string& buttons, int nBots) {
+static int64_t BestDirKey(const string& buttons, int nBots) {
     if (nBots == 1) return buttons.length();
-    int64_t r = 0;
-    const string keyPad = "X^A<v>";
-    int row = 0;
-    int col = 2;
-    for (int i = 0; i < buttons.length(); i++)
-        for (int nextR = 0; nextR < 2; nextR++)
-            for (int nextC = 0; nextC < 3; nextC++)
-                if (keyPad[nextR * 3 + nextC] == buttons[i]) {
-                    r += BestPad(row, col, nextR, nextC, nBots);
-                    row = nextR;
-                    col = nextC;
+    int64_t rslt = 0;
+    static const vector<string> dirKeyPad = {"X^A", "<v>"};
+    int r = 0, c = 2;
+    for (auto ch : buttons)
+        for (int nexR = 0; nexR < 2; nexR++)
+            for (int nexC = 0; nexC < 3; nexC++)
+                if (dirKeyPad[nexR][nexC] == ch) {
+                    rslt += BestMumKey(r, c, nexR, nexC, nBots);
+                    r = nexR;
+                    c = nexC;
                 }
-    return r;
+    return rslt;
 }
 
 static int64_t Best(int r, int c, int destR, int destC, int nBots) {
@@ -75,49 +73,46 @@ static int64_t Best(int r, int c, int destR, int destC, int nBots) {
         int r, c;
         string buttons;
     };
-    deque<Visit> q;
-    q.push_back({r, c, ""});
+    queue<Visit> q;
+    q.push({r, c, ""});
     while (!q.empty()) {
         auto v = q.front();
-        q.pop_front();
+        q.pop();
         if (v.r == destR && v.c == destC) {
-            int64_t r = BestBot(v.buttons + "A", nBots);
-            if (r < low) low = r;
+            low = min(low, BestDirKey(v.buttons + "A", nBots));
             continue;
         }
         if (v.r == 3 && v.c == 0)
             continue;
-        else {
-            if (v.r < destR)
-                q.push_back({v.r + 1, v.c, v.buttons + "v"});
-            else if (v.r > destR)
-                q.push_back({v.r - 1, v.c, v.buttons + "^"});
-            if (v.c < destC)
-                q.push_back({v.r, v.c + 1, v.buttons + ">"});
-            else if (v.c > destC)
-                q.push_back({v.r, v.c - 1, v.buttons + "<"});
-        }
+        if (v.r < destR)
+            q.push({v.r + 1, v.c, v.buttons + "v"});
+        else if (v.r > destR)
+            q.push({v.r - 1, v.c, v.buttons + "^"});
+        if (v.c < destC)
+            q.push({v.r, v.c + 1, v.buttons + ">"});
+        else if (v.c > destC)
+            q.push({v.r, v.c - 1, v.buttons + "<"});
     }
     return low;
 }
 
 static uint64_t Solve(int nBots) {
-    int64_t s = 0;
-    for (const auto& line : codes) {
-        int64_t r = 0;
-        const string keyPad = "789456123X0A";
-        int row = 3, col = 2;
-        for (auto c : line)
-            for (int nextR = 0; nextR < 4; nextR++)
-                for (int nextC = 0; nextC < 3; nextC++)
-                    if (keyPad[nextR * 3 + nextC] == c) {
-                        r += Best(row, col, nextR, nextC, nBots);
-                        row = nextR;
-                        col = nextC;
+    int64_t rslt = 0;
+    for (const auto& code : codes) {
+        int64_t b = 0;
+        const vector<string> numKeyPad = {"789", "456", "123", "X0A"};
+        int r = 3, c = 2;
+        for (auto ch : code)
+            for (int nexR = 0; nexR < 4; nexR++)
+                for (int nexC = 0; nexC < 3; nexC++)
+                    if (numKeyPad[nexR][nexC] == ch) {
+                        b += Best(r, c, nexR, nexC, nBots);
+                        r = nexR;
+                        c = nexC;
                     }
-        s += r * stol(line);
+        rslt += b * stol(code);
     }
-    return s;
+    return rslt;
 }
 
 int main() {
