@@ -2,7 +2,6 @@
 #include <fstream>
 #include <iostream>
 #include <map>
-#include <numeric>
 #include <queue>
 #include <string>
 #include <tuple>
@@ -18,7 +17,7 @@ static map<key, int64_t> memo;
 
 static int64_t BestDirKey(const string& buttons, int nBots);
 
-static int64_t BestMumKey(int r, int c, int dstR, int dstC, int nBots) {
+static int64_t BestNumKey(int r, int c, int dstR, int dstC, int nBots) {
     key k({r, c, dstR, dstC, nBots});
     auto it = memo.find(k);
     if (it != memo.end()) return it->second;
@@ -57,12 +56,12 @@ static int64_t BestDirKey(const string& buttons, int nBots) {
     static const vector<string> dirKeyPad = {"X^A", "<v>"};
     int r = 0, c = 2;
     for (auto ch : buttons)
-        for (int nexR = 0; nexR < 2; nexR++)
-            for (int nexC = 0; nexC < 3; nexC++)
-                if (dirKeyPad[nexR][nexC] == ch) {
-                    rslt += BestMumKey(r, c, nexR, nexC, nBots);
-                    r = nexR;
-                    c = nexC;
+        for (int nR = 0; nR < 2; nR++)
+            for (int nC = 0; nC < 3; nC++)
+                if (dirKeyPad[nR][nC] == ch) {
+                    rslt += BestNumKey(r, c, nR, nC, nBots);
+                    r = nR;
+                    c = nC;
                 }
     return rslt;
 }
@@ -103,12 +102,12 @@ static uint64_t Solve(int nBots) {
         const vector<string> numKeyPad = {"789", "456", "123", "X0A"};
         int r = 3, c = 2;
         for (auto ch : code)
-            for (int nexR = 0; nexR < 4; nexR++)
-                for (int nexC = 0; nexC < 3; nexC++)
-                    if (numKeyPad[nexR][nexC] == ch) {
-                        b += Best(r, c, nexR, nexC, nBots);
-                        r = nexR;
-                        c = nexC;
+            for (int nR = 0; nR < 4; nR++)
+                for (int nC = 0; nC < 3; nC++)
+                    if (numKeyPad[nR][nC] == ch) {
+                        b += Best(r, c, nR, nC, nBots);
+                        r = nR;
+                        c = nC;
                     }
         rslt += b * stol(code);
     }
