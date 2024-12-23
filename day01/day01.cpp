@@ -1,10 +1,7 @@
-// day01.cpp
-
 #include <algorithm>
 #include <chrono>
 #include <fstream>
 #include <iostream>
-#include <numeric>
 #include <vector>
 
 using namespace std;
@@ -35,11 +32,10 @@ int main() {
         left.push_back(l);
         right.push_back(r);
     }
-    int s2(p2(left, right));
     cout << "Day 1: Historian Hysteria" << endl
-         << "part 1   - " << p1(left, right) << endl
-         << "part 2   - " << s2 << endl
-         << "run time - "
+         << "Part 1   - " << p1(left, right) << endl
+         << "Part 2   - " << p2(left, right) << endl
+         << "Run time - "
          << duration_cast<microseconds>(high_resolution_clock::now() - start).count() / 1000.0
          << " ms." << endl;
 }

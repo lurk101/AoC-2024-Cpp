@@ -30,9 +30,9 @@ int main() {
             part2 += ordered[ordered.size() / 2];
     }
     cout << "Day 5: Print Queue" << endl
-         << "part 1   - " << part1 << endl
-         << "part 2   - " << part2 << endl
-         << "run time - "
+         << "Part 1   - " << part1 << endl
+         << "Part 2   - " << part2 << endl
+         << "Run time - "
          << duration_cast<microseconds>(high_resolution_clock::now() - start).count() / 1e3
          << " ms." << endl;
 }
