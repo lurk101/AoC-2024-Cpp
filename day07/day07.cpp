@@ -69,9 +69,9 @@ int main() {
     auto start = high_resolution_clock::now();
     ifstream fi("day07.txt");
     string line;
-    vector<string> in;
-    while (getline(fi, line)) in.push_back(line);
-    auto const [p1, p2]{solve(in)};
+    vector<string> equations;
+    while (getline(fi, line)) equations.push_back(line);
+    auto const [p1, p2]{solve(equations)};
     cout << "Day 7: Bridge Repair" << endl
          << "part 1   - " << p1 << endl
          << "part 2   - " << p2 << endl

@@ -8,12 +8,12 @@
 using namespace std;
 using namespace chrono;
 
-static string line;
+static string diskmap;
 
 static uint64_t part1() {
     vector<int> blocks;
     int nFiles{0}, isFree{false};
-    for (const auto c : line) {
+    for (const auto c : diskmap) {
         const int n = c - '0';
         if (isFree) {
             for (int i = 0; i < n; i++) blocks.push_back(-1);
@@ -48,7 +48,7 @@ static uint64_t part2() {
     };
     vector<Block> blocks;
     int nFiles{0}, p{0}, isFree{false};
-    for (const auto c : line) {
+    for (const auto c : diskmap) {
         const int n = c - '0';
         if (isFree) {
             blocks.emplace_back(p, n, -1);
@@ -89,11 +89,11 @@ static uint64_t part2() {
 int main() {
     auto start = high_resolution_clock::now();
     ifstream file("day09.txt");
-    getline(file, line);
+    getline(file, diskmap);
     cout << "Day 9: Disk Fragmenter" << endl
-         << "part 1   - " << part1() << endl
-         << "part 2   - " << part2() << endl
-         << "run time - "
+         << "Part 1   - " << part1() << endl
+         << "Part 2   - " << part2() << endl
+         << "Run time - "
          << duration_cast<microseconds>(high_resolution_clock::now() - start).count() / 1e3
          << " ms." << endl;
 }

@@ -8,7 +8,7 @@
 using namespace std;
 using namespace chrono;
 
-static int maxCol, maxRow{0};
+static int maxCol, maxRow;
 static map<pair<int, int>, char> ants;
 
 static bool inside(const pair<int, int>& p) {
@@ -50,7 +50,7 @@ int main() {
     ifstream fi("day08.txt");
     string line;
     while (getline(fi, line)) {
-        int col{0};
+        int col = 0;
         for (const auto& c : line) {
             if (c != '.') ants.try_emplace({maxRow, col}, c);
             col++;
@@ -58,11 +58,10 @@ int main() {
         maxRow++;
         maxCol = int(line.size());
     }
-
     cout << "Day 8: Resonant Collinearity" << endl
-         << "part 1   - " << nodes() << endl
-         << "part 2   - " << harmonics() << endl
-         << "run time - "
+         << "Part 1   - " << nodes() << endl
+         << "Part 2   - " << harmonics() << endl
+         << "Run time - "
          << duration_cast<microseconds>(high_resolution_clock::now() - start).count() / 1e3
          << " ms." << endl;
 }

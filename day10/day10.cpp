@@ -10,7 +10,7 @@ using namespace chrono;
 
 typedef vector<int> point;
 
-set<vector<int>> try1(vector<string>& grid, int x, int y, int prev_val = -1) {
+static set<vector<int>> try1(vector<string>& grid, int x, int y, int prev_val = -1) {
     set<vector<int>> visited;
     if (!(x >= 0 && x < grid.size()) || !(y >= 0 && y < grid[0].size())) return {{-1, -1}};
     if (grid[x][y] - 48 != prev_val + 1) return {{-1, -1}};
@@ -27,8 +27,8 @@ set<vector<int>> try1(vector<string>& grid, int x, int y, int prev_val = -1) {
     return visited;
 }
 
-void try2(vector<string>& grid, int x, int y, set<vector<point>>& out, vector<point> current,
-          int prev_val = -1) {
+static void try2(vector<string>& grid, int x, int y, set<vector<point>>& out, vector<point> current,
+                 int prev_val = -1) {
     if (!(x >= 0 && x < grid.size()) || !(y >= 0 && y < grid[0].size())) return;
     if (grid[x][y] - 48 != prev_val + 1) return;
     if (prev_val == 8) {
@@ -62,9 +62,9 @@ int main() {
                 p2 += int(temp.size());
             }
     cout << "Day 10: Hoof It" << endl
-         << "part 1   - " << p1 << endl
-         << "part 2   - " << p2 << endl
-         << "run time - "
+         << "Part 1   - " << p1 << endl
+         << "Part 2   - " << p2 << endl
+         << "Run time - "
          << duration_cast<microseconds>(high_resolution_clock::now() - start).count() / 1e3
          << " ms." << endl;
 }
