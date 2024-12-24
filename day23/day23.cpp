@@ -15,7 +15,7 @@ static cset c;                        // computers
 static set<pair<string, string>> dx;  // directional connections
 static map<string, cset> x;           // connections
 
-static int Part1() {
+static auto Part1() {
     int s = 0;
     set<tuple<string, string, string>> v;  // visited
     for (auto c1 : c)
@@ -61,7 +61,7 @@ static cset LargestNet(cset& c, const map<string, cset>& x, cset& connected) {
     return largest;
 }
 
-static string Part2() {
+static auto Part2() {
     cset connected, largest{LargestNet(c, x, connected)};
     vector<string> net{largest.begin(), largest.end()};
     sort(net.begin(), net.end());
