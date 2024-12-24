@@ -98,9 +98,9 @@ static uint64_t Back(vector<uint8_t> pgm, uint64_t t, uint64_t cur) {
 static string Part1() {
     auto s = Run(rA);
     string r = "";
-    for (int i = 0; i < s.size(); i++) {
-        r += to_string(s[i]);
-        if (i != s.size() - 1) r += ",";
+    for (const auto s1 : s) {
+        if (r.size()) r += ",";
+        r += to_string(s1);
     }
     return r;
 }
