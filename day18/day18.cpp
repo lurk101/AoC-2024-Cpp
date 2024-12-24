@@ -8,25 +8,25 @@
 using namespace std;
 using namespace chrono;
 
-struct Point {
+struct point {
     int x, y;
-    bool operator==(const Point& p) const { return (y == p.y) && (x == p.x); }
-    Point operator+(const Point& p) const { return {x + p.x, y + p.y}; }
+    bool operator==(const point& p) const { return (y == p.y) && (x == p.x); }
+    point operator+(const point& p) const { return {x + p.x, y + p.y}; }
 };
 
-static vector<Point> bytes;
-static const Point start = {0, 0};
-static const Point finish = {70, 70};
-static const vector<Point> dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+static vector<point> bytes;
+static const vector<point> dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 
-static int Part1(int cycle) {
+static constexpr point start = {0, 0}, finish = {70, 70};
+
+static auto Part1(int cycles) {
     int dx = finish.x - start.x + 1;
     int dy = finish.y - start.y + 1;
     vector<vector<bool>> grid(dx, vector<bool>(dy, false));
     vector<vector<bool>> visited(dx, vector<bool>(dy, false));
     vector<vector<int>> dist(dx, vector<int>(dy, 0));
-    for (int i = 0; i <= cycle; i++) grid[bytes[i].x][bytes[i].y] = true;
-    queue<pair<Point, int>> q;
+    for (int i = 0; i <= cycles; i++) grid[bytes[i].x][bytes[i].y] = true;
+    queue<pair<point, int>> q;
     q.push({start, 0});
     visited[start.x][start.y] = true;
     while (q.size()) {
@@ -47,9 +47,9 @@ static int Part1(int cycle) {
     return dist[finish.x][finish.y];
 }
 
-static string Part2() {
+static string Part2(int start) {
     int ans = 0;
-    for (int i = 1024; i < bytes.size(); i++)
+    for (int i = start; i < bytes.size(); i++)
         if (Part1(i) == -1) return to_string(bytes[i].x) + "," + to_string(bytes[i].y);
     return "not found";
 }
@@ -65,7 +65,7 @@ int main() {
     }
     cout << "Day 18: RAM Run" << endl
          << "Part 1   - " << Part1(1023) << endl
-         << "Part 2   - " << Part2() << endl
+         << "Part 2   - " << Part2(1024) << endl
          << "Run time - "
          << duration_cast<microseconds>(high_resolution_clock::now() - strt).count() / 1e3 << " ms."
          << endl;
