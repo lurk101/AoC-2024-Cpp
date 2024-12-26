@@ -10,45 +10,39 @@ using namespace chrono;
 
 static vector<uint32_t> secrets;
 
-static void Next(uint32_t& secret) {
-    uint32_t next = secret << 6;
-    secret = (secret ^ next) & 0xffffff;
-    next = secret >> 5;
-    secret = (secret ^ next) & 0xffffff;
-    next = secret << 11;
-    secret = (secret ^ next) & 0xffffff;
+static uint32_t Next(uint32_t secret) {
+    secret = (secret ^ (secret << 6)) & 0xffffff;
+    secret = (secret ^ (secret >> 5));
+    return (secret ^ (secret << 11)) & 0xffffff;
 }
 
 static uint64_t Part1() {
     uint64_t result = 0;
     for (auto secret : secrets) {
-        for (int i = 0; i < 2000; i++) Next(secret);
+        for (int i = 0; i < 2000; i++) secret = Next(secret);
         result += secret;
     }
     return result;
 }
 
 constexpr int MaxSeq = 19 * 19 * 19 * 19;
-static array<uint32_t, MaxSeq> sequences{}, prices{};
+static array<uint32_t, MaxSeq> seqs{}, prices{};
 
 static uint32_t Part2() {
     for (auto secret : secrets) {
         int buyer = secret, price = secret % 10, seq = 0;
         for (int i = 0; i < 2000; i++) {
-            Next(secret);
+            secret = Next(secret);
             int price2 = secret % 10, diff = price2 - price + 9;
             price = price2;
-            seq = (seq * 19 + diff) % MaxSeq;
-            if (sequences[seq] != buyer) {
-                sequences[seq] = buyer;
+            seq = ((seq * 19) + diff) % MaxSeq;
+            if (seqs[seq] != buyer) {
+                seqs[seq] = buyer;
                 prices[seq] += price;
             }
         }
     }
-    uint32_t totals = 0;
-    for (const auto price : prices)
-        if (price > totals) totals = price;
-    return totals;
+    return *max_element(prices.begin(), prices.end());
 }
 
 int main() {
