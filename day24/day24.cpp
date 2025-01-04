@@ -1,10 +1,10 @@
 #include <algorithm>
 #include <chrono>
+#include <format>
 #include <fstream>
 #include <iostream>
 #include <map>
 #include <set>
-#include <sstream>
 #include <vector>
 
 using namespace std;
@@ -17,7 +17,6 @@ struct gate {
 static vector<gate> gates;
 static map<string, int64_t> wires;
 static vector<string> zWires;
-static vector<pair<string, int8_t>> wireLevels;
 
 static void Propagate() {
     bool run = true;
@@ -48,7 +47,7 @@ static auto Part1() {
     return r;
 }
 
-static string GateOutput(const string a, const string oper, const string b) {
+static string GateOutWire(const string a, const string oper, const string b) {
     for (const auto& gate : gates)
         if (gate.op == oper)
             if ((gate.in0 == a && gate.in1 == b) || (gate.in0 == b && gate.in1 == a))
@@ -68,22 +67,22 @@ static void TrySwap(string& a, string& b) {
 static auto Part2() {
     string I = "";
     for (int ix = 0; ix < 45; ix++) {
-        string nn = (ix < 10) ? "0" + to_string(ix) : to_string(ix);
         string O = "", IxorSum = "", IandSum = "";
-        string XxorY = GateOutput("x" + nn, "XOR", "y" + nn);
-        string XandY = GateOutput("x" + nn, "AND", "y" + nn);
+        const string nn(format("{:02}", ix));
+        string XxorY = GateOutWire("x" + nn, "XOR", "y" + nn);
+        string XandY = GateOutWire("x" + nn, "AND", "y" + nn);
         if (I.size()) {
-            IandSum = GateOutput(I, "AND", XxorY);
-            IxorSum = GateOutput(I, "XOR", XxorY);
+            IandSum = GateOutWire(I, "AND", XxorY);
+            IxorSum = GateOutWire(I, "XOR", XxorY);
             if (IandSum.empty()) {
                 swap(XandY, XxorY);
                 swaps.push_back({XandY, XxorY});
-                IandSum = GateOutput(I, "AND", XxorY);
+                IandSum = GateOutWire(I, "AND", XxorY);
             }
             TrySwap(XxorY, IxorSum);
             TrySwap(XandY, IxorSum);
             TrySwap(IandSum, IxorSum);
-            O = GateOutput(IandSum, "OR", XandY);
+            O = GateOutWire(IandSum, "OR", XandY);
         }
         if (O.size() && (O[0] == 'z') && (O != "z45")) {
             swap(O, IxorSum);
@@ -108,6 +107,7 @@ static auto Part2() {
 int main() {
     auto strt = high_resolution_clock::now();
     ifstream fi("day24.txt");
+    vector<pair<string, int8_t>> wireLevels;
     string line;
     while (getline(fi, line)) {
         if (line == "") break;
@@ -116,9 +116,10 @@ int main() {
         wires[w] = l;
         wireLevels.push_back({w, l});
     }
-    while (getline(fi, line)) {
-        string in0, op, in1, d;
-        stringstream(line) >> in0 >> op >> in1 >> d >> d;
+    string in0;
+    while (fi >> in0) {
+        string op, in1, d;
+        fi >> op >> in1 >> d >> d;
         gates.push_back({in0, op, in1, d});
         if (d[0] == 'z') zWires.push_back(d);
     }

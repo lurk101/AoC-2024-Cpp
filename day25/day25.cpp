@@ -23,19 +23,16 @@ int main() {
             keyOrLock = 0;
             continue;
         }
-        if ((y > 0) && (y < 6)) {
-            for (int x = 0; x < line.size(); x++) {
+        if ((y > 0) && (y < 6))
+            for (const auto& c : line) {
                 keyOrLock <<= 1;
-                if (line[x] == '#') keyOrLock |= 1;
+                if (c == '#') keyOrLock |= 1;
             }
-        } else {
-            if (y == 6) {
-                if (line[0] == '#')
-                    locks.push_back(keyOrLock);
-                else
-                    keys.push_back(keyOrLock);
-            }
-        }
+        else if (y == 6)
+            if (line[0] == '#')
+                locks.push_back(keyOrLock);
+            else
+                keys.push_back(keyOrLock);
         y++;
     }
     int sum = 0;
