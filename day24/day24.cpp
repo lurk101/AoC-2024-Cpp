@@ -19,20 +19,6 @@ static map<string, int64_t> wires;
 static vector<string> zWires;
 static vector<pair<string, int8_t>> wireLevels;
 
-static vector<string> Split(const string s, const string delim) {
-    size_t pos = 0, posEnd;
-    const size_t delimLn = delim.length();
-    string token;
-    vector<string> r;
-    while ((posEnd = s.find(delim, pos)) != string::npos) {
-        token = s.substr(pos, posEnd - pos);
-        pos = posEnd + delimLn;
-        r.push_back(token);
-    }
-    r.push_back(s.substr(pos));
-    return r;
-}
-
 static void Propagate() {
     bool run = true;
     while (run) {  // repeat till all z wires are resolved
@@ -125,11 +111,9 @@ int main() {
     string line;
     while (getline(fi, line)) {
         if (line == "") break;
-        vector<string> parts = Split(line, ": ");
-        string w = parts[0];
-        int l = stoi(parts[1]);
+        string w = line.substr(0, 3);
+        int l = stoi(line.substr(4));
         wires[w] = l;
-        if (w[0] == 'z') zWires.push_back(w);
         wireLevels.push_back({w, l});
     }
     while (getline(fi, line)) {
